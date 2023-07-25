@@ -1,7 +1,7 @@
 # The-Quora-Question-Pair-Similarity-Analysis
 The Quora Question Pair Similarity Analysis
 
-#Introduction
+# Introduction
 
 Quora is a platform for Q&A, just like StackOverflow. But quora is more of a general-purpose Q&A platform that means there is not much code like in StackOverflow.
 
@@ -17,7 +17,7 @@ This problem is available on Kaggle as a competition. https://www.kaggle.com/c/q
 
 So given two questions, our main objective is to find whether they are similar. So let’s do some magic with ML. 🪄
 
-#Business Objectives and Constraints
+# Business Objectives and Constraints
 
 There is no strict latency requirement.
 We would like to have interpretability but it is not absolutely mandatory.
@@ -35,10 +35,10 @@ No. of duplicate data points is 149263
 
 We have 404290 training data points. And only 36.92% are positive. That means it is an imbalanced dataset.
 
-#Business Metrics
+# Business Metrics
 It is a binary classification.
 
-#We need to minimize the log loss for this challenge.
+# We need to minimize the log loss for this challenge.
 Basic EDA
 est data don’t have question ids. So the independent variables are question1, question2 and the dependent variable is is_duplicate.
 
@@ -50,7 +50,7 @@ Most of the questions are repeated very few times. Only a few of them are repeat
 One question is repeated 157 times which is the max number of repetitions.
 There are some questions with very few characters, which does not make sense. It will be taken care of later with Data Cleaning.
 
-#Data Cleaning
+# Data Cleaning
 We have converted everything to lower case.
 We have removed contractions.
 We have replaced currency symbols with currency names.
@@ -59,7 +59,7 @@ We have removed non-alphanumeric characters.
 We have removed inflections with word lemmatizer.
 We have also removed HTML tags.
 
-#Feature Extraction
+# Feature Extraction
 
 We have created 23 features from the questions.
 
@@ -82,11 +82,11 @@ The common_word_withoutstopword_ratio_min is equal to common_word_withoutstopwor
 The common_word_withoutstopword_ratio_max is equal to common_word_withoutstopword_num divided by maximum number of words between question 1 and question 2 excluding the stopwords.
 Then we have extracted fuzz_ratio, fuzz_partial_ratio, fuzz_token_set_ratio and fuzz_token_sort_ratio features with fuzzywuzzy string matching tool. Reference:
 
-#EDA with Features
+# EDA with Features
 
 (visualization ncan be seen in actual code)
 
-#Featurization with SentenceBERT
+# Featurization with SentenceBERT
 We need to convert the questions to some numeric form to apply machine learning models. There are various options from basic like Bag of Words to Universal Sentence Encoder.
 
 I tried InferSent sentence embeddings. But it returns 4096 dimension representation. And after applying it the train data became huge. So I discarded it. And I chose SentenceBERT for this problem.
@@ -114,7 +114,7 @@ Now we have 510048 data points for training. 255024 from each class.
 
 Note that I have not set aside any data for testing locally. Because our main goal is to get a good score on Kaggle.
 
-#Training Models
+# Training Models
 
 #Support Vector Classifier
 
@@ -159,7 +159,7 @@ Now at this point, I should have used calibration but because it has already tak
 
 The public leader board score for the Kaggle submission is 0.32372, which slightly better than SVC. I was expecting a little less logloss but remember we have not done calibration (due to time constraints). We will try to better with XGBoost — the holy grail of ml models for the Kaggle competition.
 
-#XGBoost
+# XGBoost
 
 Due to time and system configuration constrained, I decided to use 200000 data points to estimate a few of the params.
 At first, I was using Optuna for hyperparameter tuning but it had some issues because of which it was not releasing memory after the trials. So the system was crash after few trials.
@@ -184,7 +184,7 @@ The num_boost_round is set to 600 with early_stopping_rounds as 20.
 
 The public leader board score for the Kaggle submission is 0.32105, which slightly better than the other models. I was expecting a better result than this. Which is possible with more fine-tuning the hyperparameters. XGBoost have tons of hyperparameters https://xgboost.readthedocs.io/en/latest/parameter.html
 
-#Another XGBoost
+# Another XGBoost
 
 I was not happy with the result of the XGBoost model so I decided to tune the parameters with gut feeling.
 
@@ -207,9 +207,9 @@ params = dict(
 )
 Also, I decreased the number of boosting round to 500.
 
-#This submission resulted in public LB score of 0.28170. This seems a very good result.
+# This submission resulted in public LB score of 0.28170. This seems a very good result.
 
-#Final Thoughts
+# Final Thoughts
 I learned a lot from this case study. I took some shortcuts either because of system configuration constraints or some time constraints.
 
 I also experienced firsthand that machine learning is not all about model building but steps before that take more time. The hyperparameter tuning can be automated but things like feature extraction or deciding on what featurization to use need to be done manually.
